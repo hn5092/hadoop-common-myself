@@ -95,7 +95,9 @@ public class TestRPC {
   
   @Before
   public void setupConf() {
+    //new一个默认的shconfiguration
     conf = new Configuration();
+    //设置
     conf.setClass("rpc.engine." + StoppedProtocol.class.getName(),
         StoppedRpcEngine.class, RpcEngine.class);
     UserGroupInformation.setConfiguration(conf);
@@ -292,13 +294,13 @@ public class TestRPC {
         rpcTimeout, connectionRetryPolicy, null);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T> ProtocolProxy<T> getProxy(Class<T> protocol, long clientVersion,
         InetSocketAddress addr, UserGroupInformation ticket, Configuration conf,
         SocketFactory factory, int rpcTimeout,
         RetryPolicy connectionRetryPolicy, AtomicBoolean fallbackToSimpleAuth
         ) throws IOException {
+      @SuppressWarnings("unchecked")
       T proxy = (T) Proxy.newProxyInstance(protocol.getClassLoader(),
               new Class[] { protocol }, new StoppedInvocationHandler());
       return new ProtocolProxy<T>(protocol, proxy, false);
