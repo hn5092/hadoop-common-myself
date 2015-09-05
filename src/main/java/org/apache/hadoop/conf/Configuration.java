@@ -179,7 +179,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
 
   private static final Log LOG_DEPRECATION =
     LogFactory.getLog("org.apache.hadoop.conf.Configuration.deprecation");
-
+  
   private boolean quietmode = true;
 
   private static final String DEFAULT_STRING_CHECK =
