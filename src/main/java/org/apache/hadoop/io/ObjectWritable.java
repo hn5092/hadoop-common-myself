@@ -200,7 +200,6 @@ public class ObjectWritable implements Writable, Configurable {
     } else if (Writable.class.isAssignableFrom(declaredClass)) { // Writable
       UTF8.writeString(out, instance.getClass().getName());
       ((Writable)instance).write(out);
-
     } else if (Message.class.isAssignableFrom(declaredClass)) {
       ((Message)instance).writeDelimitedTo(
           DataOutputOutputStream.constructOutputStream(out));
