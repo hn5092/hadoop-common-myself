@@ -23,7 +23,11 @@ import java.lang.reflect.Constructor;
 
 import org.apache.hadoop.ipc.protobuf.RpcHeaderProtos.RpcResponseHeaderProto.RpcErrorCodeProto;
 import org.xml.sax.Attributes;
-
+/**
+ * 表示调用过程中的错误
+ * @author imad
+ *
+ */
 public class RemoteException extends IOException {
   /** For java.io.Serializable */
   private static final long serialVersionUID = 1L;

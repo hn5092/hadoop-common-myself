@@ -1162,6 +1162,7 @@ public abstract class Server {
     private boolean sentNegotiate = false;
     private boolean useWrap = false;
     
+    
     public Connection(SocketChannel channel, long lastContact) {
       this.channel = channel;
       this.lastContact = lastContact;
@@ -1478,17 +1479,20 @@ public abstract class Server {
          */    
         int count = -1;
         if (dataLengthBuffer.remaining() > 0) {
+        	//hadoop中采用显示长度进行传送  消息的开始位置是信息的长度. 通过读取信息的长度得到这个信息的边界位置
           count = channelRead(channel, dataLengthBuffer);       
           if (count < 0 || dataLengthBuffer.remaining() > 0) 
-            return count;
-        }
-        
+            return count;//显示长度没有读完或者出错
+        }	//如果读到了信息的边界 开始读取消息头
+        	//如果没有读消息头
         if (!connectionHeaderRead) {
           //Every connection is expected to send the header.
+        	//消息头的
           if (connectionHeaderBuf == null) {
             connectionHeaderBuf = ByteBuffer.allocate(3);
           }
           count = channelRead(channel, connectionHeaderBuf);
+          //说明读错了
           if (count < 0 || connectionHeaderBuf.remaining() > 0) {
             return count;
           }
@@ -1504,7 +1508,7 @@ public abstract class Server {
             setupHttpRequestOnIpcPortResponse();
             return -1;
           }
-          
+          //比较版本和消息头 如果是不一样返回-1 
           if (!RpcConstants.HEADER.equals(dataLengthBuffer)
               || version != CURRENT_VERSION) {
             //Warning is ok since this is not supposed to happen.

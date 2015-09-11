@@ -74,6 +74,10 @@ import com.google.protobuf.BlockingService;
  *
  * All methods in the protocol should throw only IOException.  No field data of
  * the protocol instance is transmitted.
+ * 
+ * 与客户端相关的功能包括rpcinvoker  rpcinvocaton 
+ * 
+ * 
  */
 public class RPC {
   final static int RPC_SERVICE_CLASS_DEFAULT = 0;

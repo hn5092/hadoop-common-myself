@@ -99,8 +99,13 @@ import com.google.protobuf.CodedOutputStream;
 /** A client for an IPC service.  IPC calls take a single {@link Writable} as a
  * parameter, and return a {@link Writable} as their value.  A service runs on
  * a port and is defined by a parameter class and a value class.
- * 
+ *  
  * @see Server
+ * 
+ * connection  类  因为client跟service  无法抽象 所以各自有一个实现  先通过TPC然后再建立IPC
+ * connctionid 是为了提高通信效率 客户单服用服务器的连接,  当其中3个变量相等的时候 connectionId相等 连接服用指的是具有相同Id的多个IPC客户端共享同一个IPC连接
+ * 如果connectionid 不同的话 创建到同一个IPC服务器上同一个IPC接口的两个客户端 使用不同的IPC 连接  为了减少连接时间和节约系统资源
+ * connectionheader    定义的是第一次ipc连接时候交换的第一条消息,携带的内容包括connectionId  中的用户信息和IPC接口信息 
  */
 public class Client {
   
@@ -302,6 +307,7 @@ public class Client {
 
   /** 
    * Class that represents an RPC call
+   * 客户端
    */
   static class Call {
     final int id;               // call id
@@ -1443,6 +1449,7 @@ public class Client {
       ConnectionId remoteId, int serviceClass,
       AtomicBoolean fallbackToSimpleAuth) throws IOException {
     final Call call = createCall(rpcKind, rpcRequest);
+    //得到一个连接
     Connection connection = getConnection(remoteId, call, serviceClass,
       fallbackToSimpleAuth);
     try {
@@ -1508,7 +1515,7 @@ public class Client {
       throw new IOException("The client is stopped");
     }
     Connection connection;
-    /* we could avoid this allocation for each RPC by having a  
+    /*	 we could avoid this allocation for each RPC by having a  
      * connectionsId object and with set() method. We need to manage the
      * refs for keys in HashMap properly. For now its ok.
      */
@@ -1537,10 +1544,10 @@ public class Client {
   @InterfaceAudience.LimitedPrivate({"HDFS", "MapReduce"})
   @InterfaceStability.Evolving
   public static class ConnectionId {
-    InetSocketAddress address;
-    UserGroupInformation ticket;
-    final Class<?> protocol;
-    private static final int PRIME = 16777619;
+    InetSocketAddress address; //远程服务端地址
+    UserGroupInformation ticket;// 用户和用户所在组的信息
+    final Class<?> protocol; //保存的是IPC接口对应的类对象  
+    private static final int PRIME = 16777619; 
     private final int rpcTimeout;
     private final int maxIdleTime; //connections will be culled if it was idle for 
     //maxIdleTime msecs
